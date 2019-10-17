@@ -11,8 +11,9 @@ import (
 var brokerUrls string
 
 func main() {
-
 	app := cli.NewApp()
+	app.Name = "Apache Kafka Client CLI"
+	app.Usage = "CLI application for interacting with Apache Kafka"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{

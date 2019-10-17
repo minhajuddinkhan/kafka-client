@@ -33,7 +33,6 @@ func Produce() cli.Command {
 			},
 		},
 		Before: func(c *cli.Context) error {
-
 			if topic == "" {
 				return cli.NewExitError("topic flag empty", 1)
 			}
@@ -46,13 +45,9 @@ func Produce() cli.Command {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			kc, err := kafka.NewClient(strings.Split(brokers, ","))
-			if err != nil {
-				return err
-			}
+			kc := kafka.NewClient(strings.Split(brokers, ","))
 			spew.Dump(kc.Produce(topic, value))
 			return nil
-
 		},
 	}
 }

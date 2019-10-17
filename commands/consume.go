@@ -50,15 +50,12 @@ func Consume() cli.Command {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			kc, err := kafka.NewClient(strings.Split(brokers, ","))
-			if err != nil {
-				return err
-			}
+			kc := kafka.NewClient(strings.Split(brokers, ","))
 			msgCh := make(chan interface{})
 			go func() {
 				spew.Dump(<-msgCh)
 			}()
-			err = kc.Consume(topic, int32(partition), msgCh)
+			err := kc.Consume(topic, int32(partition), msgCh)
 			if err != nil {
 				return err
 			}

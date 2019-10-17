@@ -21,11 +21,11 @@ type client struct {
 }
 
 // NewClient creates a new client
-func NewClient(brokerUrls []string) (Client, error) {
+func NewClient(brokerUrls []string) Client {
 	conf := sarama.NewConfig()
 	conf.Producer.Return.Successes = true
 	conf.Consumer.Return.Errors = true
 	conf.Consumer.Offsets.Initial = sarama.OffsetOldest
 
-	return &client{brokers: brokerUrls, config: conf}, nil
+	return &client{brokers: brokerUrls, config: conf}
 }
