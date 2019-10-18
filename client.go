@@ -8,9 +8,17 @@ import (
 
 //Client the kafka client
 type Client interface {
+	// Gets the list of brokers
 	Brokers() []string
+
+	// Publishes a message on the given topic
+	// Returns partition, offset and error occurred if any
 	Produce(topic string, value interface{}) (partition int32, offset int64, err error)
+
+	// Consumes a message on the given topic and partition
+	// Returns error occurred if any
 	Consume(topic string, partition int32, msgCh chan interface{}) (error error)
+
 	SetTLSConfig(certFilepath, keyFilepath string) error
 }
 

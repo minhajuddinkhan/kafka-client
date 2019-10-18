@@ -1,19 +1,17 @@
 package commands
 
 import (
-	"strings"
-
 	"github.com/davecgh/go-spew/spew"
 
 	kafka "github.com/minhajuddinkhan/kafka-client"
+	"github.com/minhajuddinkhan/kafka-client/store"
 	"github.com/urfave/cli"
 )
 
 //Produce produces messages on kafka broker
-func Produce() cli.Command {
+func Produce(store store.Kafka) cli.Command {
 	var topic string
 	var value string
-	var brokers string
 	return cli.Command{
 		Name:        "produce",
 		Description: "publishes given message on given topic",
@@ -27,10 +25,6 @@ func Produce() cli.Command {
 				Name:        "value",
 				Destination: &value,
 			},
-			cli.StringFlag{
-				Name:        "brokers",
-				Destination: &brokers,
-			},
 		},
 		Before: func(c *cli.Context) error {
 			if topic == "" {
@@ -39,13 +33,21 @@ func Produce() cli.Command {
 			if value == "" {
 				return cli.NewExitError("value flag empty", 1)
 			}
-			if brokers == "" {
-				return cli.NewExitError("brokers brokers empty", 1)
-			}
+
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			kc := kafka.NewClient(strings.Split(brokers, ","))
+
+			brokers, err := store.GetBrokers()
+			if err != nil {
+				return err
+			}
+
+			urls := make([]string, len(brokers))
+			for _, x := range brokers {
+				urls = append(urls, x.URL)
+			}
+			kc := kafka.NewClient(urls)
 			spew.Dump(kc.Produce(topic, value))
 			return nil
 		},

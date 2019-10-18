@@ -1,18 +1,18 @@
 package commands
 
 import (
-	"strings"
-
 	"github.com/davecgh/go-spew/spew"
 
 	kafka "github.com/minhajuddinkhan/kafka-client"
+	"github.com/minhajuddinkhan/kafka-client/entities"
+	"github.com/minhajuddinkhan/kafka-client/store"
 	"github.com/urfave/cli"
 )
 
 //Consume consumes messages on kafka broker
-func Consume() cli.Command {
-	var topic, brokers string
-	var partition, offset int
+func Consume(store store.Kafka) cli.Command {
+	var topic string
+	var partition int
 
 	return cli.Command{
 		Name:        "consume",
@@ -27,14 +27,6 @@ func Consume() cli.Command {
 				Name:        "partition",
 				Destination: &partition,
 			},
-			cli.IntFlag{
-				Name:        "offset",
-				Destination: &offset,
-			},
-			cli.StringFlag{
-				Name:        "brokers",
-				Destination: &brokers,
-			},
 		},
 		Before: func(c *cli.Context) error {
 
@@ -44,18 +36,25 @@ func Consume() cli.Command {
 			if partition == -1 {
 				return cli.NewExitError("invalid flag empty", 1)
 			}
-			if offset == -1 {
-				return cli.NewExitError("brokers brokers empty", 1)
-			}
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			kc := kafka.NewClient(strings.Split(brokers, ","))
+
+			brokers, err := store.GetBrokers()
+			if err != nil {
+				return err
+			}
+
+			bg := entities.BrokerGroup{Brokers: brokers}
+			kc := kafka.NewClient(bg.URLs())
+
 			msgCh := make(chan interface{})
+
 			go func() {
-				spew.Dump(<-msgCh)
+				msg := <-msgCh
+				spew.Dump(msg)
 			}()
-			err := kc.Consume(topic, int32(partition), msgCh)
+			err = kc.Consume(topic, int32(partition), msgCh)
 			if err != nil {
 				return err
 			}
