@@ -44,8 +44,8 @@ func Produce(store store.Kafka) cli.Command {
 			}
 
 			urls := make([]string, len(brokers))
-			for _, x := range brokers {
-				urls = append(urls, x.URL)
+			for i, x := range brokers {
+				urls[i] = x.URL
 			}
 			kc := kafka.NewClient(urls)
 			spew.Dump(kc.Produce(topic, value))

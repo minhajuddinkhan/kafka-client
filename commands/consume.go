@@ -44,16 +44,13 @@ func Consume(store store.Kafka) cli.Command {
 			if err != nil {
 				return err
 			}
-
+			spew.Dump("ORIGINAL INDB", brokers)
 			bg := entities.BrokerGroup{Brokers: brokers}
 			kc := kafka.NewClient(bg.URLs())
 
 			msgCh := make(chan interface{})
 
-			go func() {
-				msg := <-msgCh
-				spew.Dump(msg)
-			}()
+			// TODO:: add mechanism to receieve messages
 			err = kc.Consume(topic, int32(partition), msgCh)
 			if err != nil {
 				return err

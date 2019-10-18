@@ -13,8 +13,8 @@ type BrokerGroup struct {
 func (bg BrokerGroup) URLs() []string {
 
 	urls := make([]string, len(bg.Brokers))
-	for _, x := range bg.Brokers {
-		urls = append(urls, x.URL)
+	for i, x := range bg.Brokers {
+		urls[i] = x.URL
 	}
 	return urls
 }

@@ -3,8 +3,9 @@ package kafka
 import (
 	"fmt"
 
-	"github.com/Shopify/sarama"
 	"github.com/davecgh/go-spew/spew"
+
+	"github.com/Shopify/sarama"
 )
 
 func (kc *client) Consume(topic string, partition int32, msgCh chan interface{}) (err error) {
@@ -14,19 +15,16 @@ func (kc *client) Consume(topic string, partition int32, msgCh chan interface{})
 		return fmt.Errorf("unable to create consumer. err: %v", err)
 	}
 
-	defer consumer.Close()
-
 	for {
+		fmt.Println(topic, partition)
 		cp, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
 		if err != nil {
 			return err
 		}
 		select {
-
 		case msg := <-cp.Messages():
-			msgCh <- msg.Value
-			spew.Dump("closing!")
 			cp.Close()
+			spew.Dump(msg)
 		case err := <-cp.Errors():
 			return err
 		}
