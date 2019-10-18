@@ -14,13 +14,13 @@ VERSION:
 COMMANDS:
      consume  consumes a message on given topic, partition and offset
      produce  publishes given message on given topic
+     brokers  saves broker urls to storage
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --brokers value  Saves broker urls
    --help, -h       show help
    --version, -v    print the version
-
 ```
 
 
@@ -29,6 +29,12 @@ GLOBAL OPTIONS:
 ```bash
 $ git clone https://github.com/minhajuddinkhan/kafka-client
 $ cd kafka-client
+```
+
+### Set brokers
+
+```bash
+$ go run bin/kafka-client/main.go brokers set localhost:9092
 ```
 
 ### Consume messages from Kafka
